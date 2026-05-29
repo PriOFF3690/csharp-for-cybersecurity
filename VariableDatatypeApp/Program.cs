@@ -49,21 +49,6 @@ class Program
                     -> pointer      : Used to store the memory address of a variable. Pointer types require the use of unsafe code to access and modify memory directly.
 
         */
-
-        /*
-            Constants:
-                Constants are the variables whose values cannot be changed thoughout the program, once they declared.
-                'const' keyword is used to define constant variables.
-                Syntax:
-                    const <datatype> <literal> = <value> 
-                Example:
-                    const int a = 10;
-                    const float b = 10.4f;
-                    const double c = 10.9;
-                    const char d = 'f';
-                    const bool e = true;
-                    const string f = "This is constant string";                    
-        */
         
         // Value Data Types
         int a = 10;
@@ -76,7 +61,6 @@ class Program
         string f = "This is a simple string";
         object g = 10; // Boxing
         int[] h = {1,2,3,4};
-        const string k = "This is constant string";
 
         // Pointer Data Types
         unsafe
@@ -98,6 +82,5 @@ class Program
         Console.WriteLine("f: "+f);
         Console.WriteLine("g: "+g);
         Console.WriteLine("h: {"+h[0]+", "+h[1]+", "+h[2]+", "+h[3]+"}");    
-        Console.WriteLine("k: "+k);
     }
 }
