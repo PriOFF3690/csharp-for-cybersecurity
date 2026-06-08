@@ -3,9 +3,24 @@ using System.Security.Cryptography;
 
 class Program
 {
-    static int guess,difficulty,random = RandomNumberGenerator.GetInt32(1,100);
+    static int guess,difficulty,random = RandomNumberGenerator.GetInt32(1,100),totalGuess;
+
+    static bool win = false;
     static float points;
     static string player="Guest";
+
+    static void ClearHistory()
+    {
+        File.WriteAllText("history.txt","");
+        Console.WriteLine("\n");
+        Console.WriteLine("***************************");
+        Console.WriteLine("*       Clear History     *");
+        Console.WriteLine("***************************");
+        Console.WriteLine("History has been clear...");
+        Console.WriteLine("\nPress any key to continue...");
+        Console.ReadKey();
+
+    }
     static void PrintMainScreen()
     {
         Console.WriteLine("\n");
@@ -13,7 +28,9 @@ class Program
         Console.WriteLine("*    Guess The Number     *");
         Console.WriteLine("***************************");
         Console.WriteLine(" 1. Play");
-        Console.WriteLine(" 2. Exit");
+        Console.WriteLine(" 2. History");
+        Console.WriteLine(" 3. Clear History");
+        Console.WriteLine(" 4. Exit");
         Console.Write(" Select Option: ");
     }
 
@@ -55,14 +72,68 @@ class Program
         Console.ReadKey();
     }
 
+    static void PrintHistoryScreen()
+    {
+        Console.WriteLine("\n");
+        Console.WriteLine("***************************");
+        Console.WriteLine("*         History         *");
+        Console.WriteLine("***************************");
+        using (StreamReader reader = new StreamReader("history.txt"))
+        {
+            string history = reader.ReadToEnd();
+            Console.WriteLine(history);
+        }
+        Console.Write("\n Press any key to continue...");
+        Console.ReadKey();
+    }
+
+    static void PrintEndScreen()
+    {
+        if (win)
+        {
+            Console.WriteLine($"\nCongratulations, {player}!!!");
+            Console.WriteLine($"Attempts Taken: {totalGuess-guess}");
+            Console.WriteLine($"Total Score: {guess*points}");
+            Console.Write("Enter any key to continue...");
+            Console.ReadKey();
+        }
+        else
+        {
+            Console.WriteLine($"\nYou lose, {player}!!!");
+            Console.WriteLine($"The Random Number Was: {random}");
+            Console.WriteLine("Better Luck Next Time...");
+            Console.Write("Enter any key to continue...");
+            Console.ReadKey();
+        }
+        LogResult();
+    }
+
+    static void LogResult()
+    {
+        string difficultyString;
+        if (difficulty==1)
+        {   
+            difficultyString = "Easy";
+        }
+        else if (difficulty == 2)
+        {
+            difficultyString = "Medium";
+        }
+        else
+        {
+            difficultyString = "Hard";
+        }
+        File.AppendAllText("history.txt",$"{player}\tAttempt Taken: {totalGuess-guess}\tDifficulty: {difficultyString}\tTotal Score: {guess*points}\tTime: {DateTime.Now}\tRandom Number: {random}\n");
+        
+    }
     static void PlayGameScreen()
     {
         int myGuess;
         PlayGame:
+        Console.WriteLine("\n");
         Console.WriteLine("***************************");
         Console.WriteLine($"* Available Guess: {guess}     *");
         Console.WriteLine("***************************");
-        Console.WriteLine(random);
         Console.Write(" Guess the number: ");
         try
         {
@@ -72,6 +143,12 @@ class Program
         {
             Console.WriteLine(" Please Enter Integer Value...");
             goto PlayGame;
+        }
+        if(guess == 1)
+        {
+            guess--;
+            PrintEndScreen();
+            return;
         }
         if(myGuess < 0 || myGuess >100)
         {
@@ -91,11 +168,11 @@ class Program
             guess--;
             goto PlayGame;
         }
-        else
+        else if(myGuess == random)
         {
-            Console.WriteLine("Congratulations!!!");
-            Console.WriteLine($"Attempts Taken: {11-guess}");
-            Console.WriteLine($"Total Score: {guess*points}");
+            guess--;
+            win=true;
+            PrintEndScreen();
         }
     }
     static void Main()
@@ -131,17 +208,20 @@ class Program
                 switch (choice)
                 {
                     case 1:
-                        guess = 10;
+                        guess  = 10;
+                        totalGuess  = 10;
                         difficulty = 1;
                         points = 20.0f;
                         break;
                     case 2:
                         guess = 7;
+                        totalGuess = 7;
                         difficulty = 2;
                         points = 25.0f;
                         break;
                     case 3:
                         guess = 5;
+                        totalGuess = 5;
                         difficulty = 3;
                         points = 40.0f;
                         break;
@@ -155,10 +235,17 @@ class Program
                 PlayGameScreen();
                 break;
             case 2:
+                PrintHistoryScreen();
+                goto MainScreen;
+            case 3:
+                ClearHistory();
+                goto MainScreen;
+            case 4:
                 return;
             default:
-                Console.WriteLine("\n Please select 1 or 2");
+                Console.WriteLine("\n Please select option from 1 to 4");
                 goto MainScreen;
         }
+        goto MainScreen;
     }
 }
